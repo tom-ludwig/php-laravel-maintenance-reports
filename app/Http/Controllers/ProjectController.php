@@ -76,10 +76,10 @@ class ProjectController extends Controller
                 ->map(function ($report) {
                     return [
                         'id' => $report->id,
-                        'submitted_at' => $report->created_at,
-                        'submitter_name' => $report->submitter_name,
-                        'submitter_email' => $report->submitter_email,
+                        'name' => $report->name,
+                        'status' => $report->status,
                         'notes' => $report->notes,
+                        'submitted_at' => $report->created_at,
                         'attachments' => $report->attachments->map(function ($attachment) {
                             return [
                                 'id' => $attachment->id,

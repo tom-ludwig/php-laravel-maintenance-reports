@@ -4,22 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class MaintenanceReport extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $table = 'maintenance_reports';
 
     protected $fillable = [
-        'project_uuid',
+        'id',
+        'project_id',
         'name',
         'status',
-        'notes',
-        'images'
+        'notes'
     ];
 
     protected $casts = [
-        'images' => 'array',
         'id' => 'string'
     ];
 
@@ -35,5 +37,15 @@ class MaintenanceReport extends Model
                 $model->{$model->getKeyName()} = Str::uuid()->toString();
             }
         });
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(ReportImage::class, 'maintenance_report_id');
     }
 } 

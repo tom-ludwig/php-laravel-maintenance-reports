@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reports', function (Blueprint $table) {
-            $table->id();
+        Schema::create('maintenance_reports', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            $table->string('document_number');
-            $table->string('reporter_name');
-            $table->text('description')->nullable();
-            $table->enum('status', ['done', 'half', 'needs_repair', 'not_completed'])->default('not_completed');
+            $table->string('name');
+            $table->enum('status', ['done', 'not_completed', 'in_progress', 'repair_needed'])->default('not_completed');
+            $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reports');
+        Schema::dropIfExists('maintenance_reports');
     }
 };

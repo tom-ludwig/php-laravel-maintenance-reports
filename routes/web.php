@@ -93,6 +93,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Reports (viewing submitted reports)
     Route::get('/reports', [ReportController::class, 'index'])
         ->name('reports.index');
+
+    Route::delete('/reports/{report}', [MaintenanceFormController::class, 'destroy'])->name('reports.destroy');
 });
 
 // Include remaining auth routes

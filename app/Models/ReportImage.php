@@ -11,12 +11,13 @@ class ReportImage extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'report_id',
-        'image_path',
+        'maintenance_report_id',
+        'name',
+        'path'
     ];
 
-    public function report()
+    public function maintenanceReport()
     {
-        return $this->belongsTo(Report::class);
+        return $this->belongsTo(MaintenanceReport::class);
     }
 }

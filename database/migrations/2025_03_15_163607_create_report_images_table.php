@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('report_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('report_id')->constrained()->onDelete('cascade');
-            $table->string('image_path');
+            $table->foreignUuid('maintenance_report_id')->references('id')->on('maintenance_reports')->onDelete('cascade');
+            $table->string('name');
+            $table->string('path');
             $table->timestamps();
             $table->softDeletes();
         });
