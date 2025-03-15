@@ -4,6 +4,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\MaintenanceFormController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -57,6 +58,14 @@ Route::middleware('guest')->group(function () {
         ->name('reports.store');
 });
 
+// Public routes (no auth required)
+Route::get('/project-entry', [MaintenanceFormController::class, 'projectEntry'])->name('project.entry');
+Route::get('/maintenance/{id}', [MaintenanceFormController::class, 'show'])->name('maintenance.show');
+Route::post('/maintenance', [MaintenanceFormController::class, 'store'])->name('maintenance.store');
+Route::get('/thank-you', function () {
+    return Inertia::render('ThankYou');
+})->name('thank-you');
+
 // Authenticated user routes
 Route::middleware(['auth', 'verified'])->group(function () {
     // Projects
@@ -85,11 +94,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])
         ->name('reports.index');
 });
-
-// Thank you page
-Route::get('/thank-you', function () {
-    return Inertia::render('ThankYou');
-})->name('thank-you');
 
 // Include remaining auth routes
 require __DIR__.'/auth.php';

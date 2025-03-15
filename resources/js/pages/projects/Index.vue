@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog as QrDialog } from '@/components/ui/dialog'
 import { PlusIcon, TrashIcon, QrCodeIcon, CalendarIcon, DocumentIcon } from '@heroicons/vue/24/outline'
 import QRCode from 'qrcode'
+import CustomAlert from '@/Components/CustomAlert.vue'
 
 import { ref, computed, onMounted, watch } from 'vue'
 import { Link, useForm, router } from '@inertiajs/vue3'
@@ -95,10 +96,23 @@ const createProject = () => {
   })
 }
 
-const confirmDelete = (e: Event) => {
-  if (!confirm('Are you sure you want to delete this project?')) {
-    e.preventDefault()
-  }
+const showDeleteAlert = ref(false)
+const projectToDelete = ref<typeof props.projects[0] | null>(null)
+
+const confirmDelete = (project: typeof props.projects[0]) => {
+    projectToDelete.value = project
+    showDeleteAlert.value = true
+}
+
+const handleDelete = () => {
+    if (projectToDelete.value) {
+        router.delete(`/projects/${projectToDelete.value.id}`, {
+            onSuccess: () => {
+                showDeleteAlert.value = false
+                projectToDelete.value = null
+            }
+        })
+    }
 }
 </script>
 
@@ -130,10 +144,7 @@ const confirmDelete = (e: Event) => {
               <Button
                 variant="ghost"
                 size="icon"
-                :href="`/projects/${project.id}`"
-                method="delete"
-                as="Link"
-                @click="confirmDelete"
+                @click="confirmDelete(project)"
                 class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
               >
                 <TrashIcon class="h-5 w-5" />
@@ -144,7 +155,10 @@ const confirmDelete = (e: Event) => {
                 <CalendarIcon class="h-4 w-4" />
                 <span>{{ formatDate(project.project_date) }}</span>
               </div>
-              <p class="text-sm text-card-foreground mb-4">{{ project.description }}</p>
+              <div class="flex flex-col gap-2 mb-4">
+                <p class="text-sm text-card-foreground">{{ project.description }}</p>
+                <p class="text-xs text-muted-foreground">Project ID: {{ project.id }}</p>
+              </div>
               
               <div v-if="project.form_url" class="space-y-4">
                 <div class="relative group flex justify-center">
@@ -163,16 +177,6 @@ const confirmDelete = (e: Event) => {
                   </div>
                 </div>
                 <div class="flex flex-col gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    :href="project.form_url"
-                    as="Link"
-                    class="w-full gap-2"
-                  >
-                    <QrCodeIcon class="h-4 w-4" />
-                    View Report Form
-                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
@@ -276,6 +280,17 @@ const confirmDelete = (e: Event) => {
             </div>
           </DialogContent>
         </QrDialog>
+
+        <!-- Delete Confirmation Alert -->
+        <CustomAlert
+            :is-open="showDeleteAlert"
+            title="Delete Project"
+            :message="projectToDelete ? `Are you sure you want to delete '${projectToDelete.name}'?'` : ''"
+            type="danger"
+            confirm-text="Delete"
+            @close="showDeleteAlert = false"
+            @confirm="handleDelete"
+        />
       </div>
     </div>
   </AppLayout>

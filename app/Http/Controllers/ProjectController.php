@@ -40,8 +40,12 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
-        $project->delete();
-        return redirect()->back();
+        try {
+            $project->delete();
+            return redirect()->back()->with('success', 'Project deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete project');
+        }
     }
 
     public function showQrCode(Project $project)
